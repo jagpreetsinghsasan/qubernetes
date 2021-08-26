@@ -1,0 +1,10 @@
+org1: 
+  org1-validator-node1:
+    resource-id: /subscriptions/sdsdsd123123122-12312312-12312/resourceGroups/abv111/providers/Microsoft.Compute/disks/disk_1
+    disk-name: disk_1
+  org1-validator-node2: 
+    resource-id: /subscriptions/sdsdsd123123122-12312312-12312/resourceGroups/abv111/providers/Microsoft.Compute/disks/disk_2
+    disk-name: disk_2
+  org1-transaction-node1:
+    resource-id: /subscriptions/sdsdsd123123122-12312312-12312/resourceGroups/abv111/providers/Microsoft.Compute/disks/disk_3
+    disk-name: disk_3

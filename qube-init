@@ -4,6 +4,9 @@ require "yaml"
 require "erb"
 require 'optparse'
 
+# Adding the static config file for node disk information
+@azure_disk_config_file = "templates/config/azure-disk-info.yaml"
+
 # set up flag options
 options = {action: 'ask'}
 
@@ -52,7 +55,7 @@ system("./quorum-init --action=#{@action_flag} #{@config_file}")
 puts  "  Running ./qubernetes to generate Kubernetes resources."
 puts ""
 `
-./qubernetes #{@config_file}
+./qubernetes #{@config_file} #{@azure_disk_config_file}
 `
 @Kubectl_Cmd="  $> kubectl apply -f out"
 if @sep_deployment_files

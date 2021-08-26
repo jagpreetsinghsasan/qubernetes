@@ -8,19 +8,30 @@ require 'colorize'
 @base_template_path = "templates/k8s"
 @config_file = "qubernetes.yaml"
 @optional_config_file=ARGV[0]
+
+@azure_disk_config_file = "templates/config/azure-disk-info.yaml"
+@optional_azure_disk_config_file=ARGV[1]
+
 ARGV.clear
 
 
 if @optional_config_file != nil
   @config_file = @optional_config_file
 end
+
+if @optional_azure_disk_config_file != nil
+  @azure_disk_config_file = @optional_azure_disk_config_file
+end
 puts "using config file: " + @config_file
 @config                = YAML.load_file(@config_file)
+
+@disk_config           = YAML.load_file(@azure_disk_config_file)
 
 @nodes                 = @config["nodes"] #YAML.load_file("nodes.yaml")["nodes"]
 ## set defaults for config if not set, else use the values from the config.
 def set_node_template_vars(values)
   @Node_UserIdent        = values["Node_UserIdent"]
+  @Node_Org_Name         = values["org_name"]
   @Service_Prefix        = (@Node_UserIdent.upcase).gsub("-", "_")
   @Node_Key_Dir          = values["Key_Dir"]
   @Consensus             = values["quorum"]["quorum"]["consensus"]
@@ -227,6 +238,8 @@ if @sep_deployment_files
   `mkdir -p out/deployments`
   @nodes.each do |node|
     set_node_template_vars(node)
+    @Disk_Name = @disk_config[@Node_Org_Name][@Node_UserIdent]["disk-name"]
+    @Disk_Resource_Id = @disk_config[@Node_Org_Name][@Node_UserIdent]["resource-id"]
     # create each deployment in a separate file.
     @template_file = (@Node_Type == "validator") ? "quorum-validator-deployment.yaml.erb" : "quorum-deployment.yaml.erb"
     File.open("out/deployments/" + @Node_UserIdent + "-quorum-deployment.yaml", "w") do |f|
@@ -240,6 +253,8 @@ else
   end
   @nodes.each do |node|
     set_node_template_vars(node)
+    @Disk_Name = @disk_config[@Node_Org_Name][@Node_UserIdent]["disk-name"]
+    @Disk_Resource_Id = @disk_config[@Node_Org_Name][@Node_UserIdent]["resource-id"]
     @template_file = (@Node_Type == "validator") ? "quorum-validator-deployment.yaml.erb" : "quorum-deployment.yaml.erb"
     # create each deployment in a same file.
     File.open("out/05-quorum-deployments.yaml", "a") do |f|
